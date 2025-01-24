@@ -92,6 +92,8 @@ public class UserNotFoundException extends RuntimeException {
 }
 ```
 
+---
+
 ## 🚀 6. Instructions supplémentaires
 - ✔️ Respectez les bonnes pratiques de développement Spring Boot.
 - ✔️ Utilisez @Service pour la logique métier et @RestController pour les API.
