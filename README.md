@@ -93,8 +93,10 @@ public class UserNotFoundException extends RuntimeException {
 ```
 
 ## 🚀 6. Instructions supplémentaires
-✔️ Respectez les bonnes pratiques de développement Spring Boot.
-✔️ Utilisez @Service pour la logique métier et @RestController pour les API.
-✔️ Implémentez des contrôleurs REST pour gérer les requêtes HTTP.
-✔️ Ajoutez des exceptions personnalisées pour gérer les erreurs courantes.
-✔️ Testez vos endpoints avec des requêtes POST, GET et DELETE dans Postman.
+- ✔️ Respectez les bonnes pratiques de développement Spring Boot.
+- ✔️ Utilisez @Service pour la logique métier et @RestController pour les API.
+- ✔️ Implémentez des contrôleurs REST pour gérer les requêtes HTTP.
+- ✔️ Ajoutez des exceptions personnalisées pour gérer les erreurs courantes.
+- ✔️ Testez vos endpoints avec des requêtes POST, GET et DELETE dans Postman.
+
+---
