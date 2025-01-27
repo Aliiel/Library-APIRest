@@ -20,25 +20,30 @@ public class UserService {
     }
 
 
+    // méthode pour récuperer tous les utilisateurs enregistrés en bdd
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
 
+    // méthode pour récupérer un utilisateur enregistré en bdd à partir de son id
     public User getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas"));
     }
 
 
+    // méthode pour créer un nouvel utilisateur
     public void addUser(User user) {
         try {
+            // vérification de l'existence de l'utilisateur avec son nom et son email
             boolean userExists = userRepository.existsByNameAndEmail(user.getName(), user.getEmail());
             if (userExists) {
                 throw new UserAlreadyExistsException("Un utilisateur avec ce nom et cette adresse e-mail existe déjà.");
             }
             userRepository.save(user);
 
+            // gestion de l'exception levée suite à l'annotation unique pour le champ de l'adresse email
         } catch (DataIntegrityViolationException e) {
 
             throw new UserAlreadyExistsException("Un utilisateur avec cette adresse e-mail existe déjà.");
@@ -46,6 +51,7 @@ public class UserService {
     }
 
 
+    // méthode pour modifier un utilisateur
     public User updateUser(Long id, User userUpdated) {
 
         User existingUser = userRepository.findById(id)
@@ -69,6 +75,7 @@ public class UserService {
     }
 
 
+    // méthode pour supprimer un utilisateur
     public void deleteUser(Long id) {
 
         Optional<User> existingUser = userRepository.findById(id);

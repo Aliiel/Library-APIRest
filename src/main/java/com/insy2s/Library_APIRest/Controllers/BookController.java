@@ -19,12 +19,16 @@ public class BookController {
         this.bookService = bookService;
     }
 
+
+    // endpoint pour afficher tous les livres enregistrés
     @GetMapping
     public ResponseEntity<List<Book>> getAllBooks() {
         List<Book> books = bookService.getAllBooks();
         return ResponseEntity.ok(books);
     }
 
+
+    // endpoint pour afficher un livre à partir de son id
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookById(@PathVariable Long id) {
         try {
@@ -36,6 +40,10 @@ public class BookController {
         }
     }
 
+
+    // endpoint pour lister les livres selon leur disponibilité :
+    // - http://localhost:8080/books/isAvailable?isAvailable=false : liste les livres non dispo
+    // - http://localhost:8080/books/isAvailable?isAvailable=true : liste les livres dispo
     @GetMapping("/isAvailable")
     public ResponseEntity<List<Book>> getBooksByAvailability
             (@RequestParam("isAvailable") boolean isAvailable) {
@@ -43,6 +51,8 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+
+    // endpoint pour enregistrer un livre (préciser seulement le titre et l'auteur dans le body)
     @PostMapping
     public ResponseEntity<String> createBook(@RequestBody Book book) {
         try {
@@ -54,6 +64,8 @@ public class BookController {
         }
     }
 
+
+    // endpoint pour modifier un livre à partir de son id (possibilité de modifier qu'un seul attribut à préciser dans le body)
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateBook(
             @PathVariable Long id,
@@ -68,6 +80,8 @@ public class BookController {
         }
     }
 
+
+    // endpoint pour supprimer un livre à partir de son id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBookById(@PathVariable Long id) {
         try {

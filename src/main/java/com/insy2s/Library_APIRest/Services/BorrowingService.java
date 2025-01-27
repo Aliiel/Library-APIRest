@@ -35,16 +35,22 @@ public class BorrowingService {
     }
 
 
+    // méthode pour récupérer tous les emprunts enregistrés en bdd
     public List<Borrowing> getAllBorrowings() {
         return borrowingRepository.findAll();
     }
 
 
+    // méthode pour emprunter un livre
     public void borrowBook(Long bookId, Long userId) {
 
+        // Détermination de la date d'emprunt à l'instant présent
         LocalDate borrowDate = LocalDate.now();
+
+        // récupération du livre concerné à partir de son id passé en paramètre
         Book book = bookService.getBookById(bookId);
 
+        // vérification de la disponibilité du livre
         if (!book.getIsAvailable()) {
 
             System.out.println("Le livre n'est pas disponible, exception");
@@ -52,6 +58,7 @@ public class BorrowingService {
             throw new BookUnavailableException
                     ("Le livre que vous souhaitez emprunter est déjà en cours d'emprunt");
 
+            // vérification du nombre d'emprunts en cours pour l'utilisateur concerné
         } else if (!canUserBorrowBook(userId)) {
 
             throw new BorrowingLimitExceededException
@@ -59,9 +66,13 @@ public class BorrowingService {
 
         } else {
 
+            // maj de la dispo du livre
             book.setIsAvailable(false);
+
+            // récupération de l'utilisateur qui effectue l'emprunt a partir de son id
             User user = userService.getUserById(userId);
 
+            // création d'une nouvelle entrée d'emprunt reprenant la date d'emprunt, le livre emprunté, et l'utilisateur qui effectue l'emprunt
             Borrowing borrowing = new Borrowing();
             borrowing.setBorrowDate(borrowDate);
             borrowing.setBook(book);
@@ -71,16 +82,24 @@ public class BorrowingService {
     }
 
 
+    // méthode pour rendre un livre
     public void returnBook(Long bookId) {
 
+        // vérification que le livre a rendre est dans la liste des emprunts
         if (!borrowingRepository.existsByBookId(bookId)) {
             throw new NullPointerException("Il n'y a pas d'emprunt enregistré pour ce livre");
         }
 
+        // Détermination de la date de retour à l'instant présent
         LocalDate returnDate = LocalDate.now();
+
+        // récupération du livre concerné a partir de son id
         Book book = bookService.getBookById(bookId);
+
+        // récupération de la liste des emprunts enregistrés pour ce livre
         List<Borrowing> borrowings = borrowingRepository.findBorrowingByBookId(bookId);
 
+        // récupération enregistrements non rendus présents dans la liste des emprunts du livre
         for (Borrowing borrowing : borrowings) {
             if (borrowing.getReturnDate() == null) {
                 borrowing.setReturnDate(returnDate);
@@ -91,7 +110,9 @@ public class BorrowingService {
     }
 
 
+    // méthode pour récupérer la liste des livres empruntés pour un utilisateur à partir de son id
     public List<Borrowing> getBorrowingsByUserId(Long userId) {
+        // vérification de l'existence de l'utilisateur concerné
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("L'utilisateur avec l'ID " + userId + " n'existe pas");
         }
@@ -101,9 +122,13 @@ public class BorrowingService {
     }
 
 
+    // méthode pour vérifier si un utilisateur peut effectuer un nouvel emprunt ou non
     public boolean canUserBorrowBook(Long userId) {
 
+        // récupération des emprunts en cours enregistrés pour un utilisateur
         Optional<List<Borrowing>> borrowings = borrowingRepository.findBorrowingByUserId(userId);
+
+        // si la liste des emprunts contient 3 enregistrements ou plus, retourne false
         if (borrowings.get().size() >= 3) {
             return false;
         }

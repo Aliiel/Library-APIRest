@@ -20,6 +20,7 @@ public class BorrowingController {
     }
 
 
+    // endpoint pour lister tous les emprunts enregistrés
     @GetMapping
     public ResponseEntity<List<Borrowing>> getAllBorrowings() {
         List<Borrowing> borrowings = borrowingService.getAllBorrowings();
@@ -27,6 +28,7 @@ public class BorrowingController {
     }
 
 
+    // endpoint pour lister tous les emprunts en cours pour un utilisateur a partir de son id
     @GetMapping("/{userId}")
     public ResponseEntity<?> getBorrowingsById
             (@PathVariable("userId") Long userId) {
@@ -41,6 +43,7 @@ public class BorrowingController {
     }
 
 
+    // endpoint pour emprunter un livre
     @PostMapping("/{bookId}/{userId}")
     public ResponseEntity<?> borrowBook(
             @PathVariable Long bookId,
@@ -58,6 +61,7 @@ public class BorrowingController {
     }
 
 
+    // endpoint pour rendre un livre emprunté
     @PatchMapping("/{bookId}")
     public ResponseEntity<?> returnBook(
             @PathVariable Long bookId

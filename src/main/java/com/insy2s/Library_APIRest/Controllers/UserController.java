@@ -19,12 +19,16 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    // endpoint pour lister tous les utilisateurs
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+
+    // endpoint pour afficher un utilisateur à partir de son id
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
@@ -36,6 +40,8 @@ public class UserController {
         }
     }
 
+
+    // endpoint pour créer un nouvel utilisateur
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody User user) {
         try {
@@ -47,6 +53,8 @@ public class UserController {
         }
     }
 
+
+    // endpoint pour modifier un utilisateur (possibilité de modifier un seul attribut en le passant seul dans le body)
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
@@ -61,6 +69,8 @@ public class UserController {
         }
     }
 
+
+    // endpoint pour supprimer un utilisateur
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         try {
