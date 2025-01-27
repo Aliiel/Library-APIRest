@@ -1,15 +1,11 @@
 package com.insy2s.Library_APIRest.Services;
 
 import com.insy2s.Library_APIRest.Exceptions.*;
-import com.insy2s.Library_APIRest.Models.DTO.BookDTO;
 import com.insy2s.Library_APIRest.Models.DTO.BorrowingDTO;
-import com.insy2s.Library_APIRest.Models.DTO.UserDTO;
 import com.insy2s.Library_APIRest.Models.Entities.Book;
 import com.insy2s.Library_APIRest.Models.Entities.Borrowing;
 import com.insy2s.Library_APIRest.Models.Entities.User;
-import com.insy2s.Library_APIRest.Models.Mapper.BookMapper;
 import com.insy2s.Library_APIRest.Models.Mapper.BorrowingMapper;
-import com.insy2s.Library_APIRest.Models.Mapper.UserMapper;
 import com.insy2s.Library_APIRest.Models.Repositories.IBookRepository;
 import com.insy2s.Library_APIRest.Models.Repositories.IBorrowingRepository;
 import com.insy2s.Library_APIRest.Models.Repositories.IUserRepository;
@@ -23,20 +19,14 @@ import java.util.Optional;
 @Service
 public class BorrowingService {
 
-    private final BookService bookService;
-    private final UserService userService;
     private final IBorrowingRepository borrowingRepository;
     private final IUserRepository userRepository;
     private final IBookRepository bookRepository;
 
     public BorrowingService(
-            BookService bookService,
-            UserService userService,
             IBorrowingRepository borrowingRepository,
             IUserRepository userRepository,
             IBookRepository bookRepository) {
-        this.bookService = bookService;
-        this.userService = userService;
         this.borrowingRepository = borrowingRepository;
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;

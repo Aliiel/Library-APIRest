@@ -6,19 +6,18 @@ import com.insy2s.Library_APIRest.Models.DTO.BookDTO;
 import com.insy2s.Library_APIRest.Models.Entities.Book;
 import com.insy2s.Library_APIRest.Models.Mapper.BookMapper;
 import com.insy2s.Library_APIRest.Models.Repositories.IBookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor   // permet d'injecter automatiquement les dépendances
+// déclarées en final sans devoir les passer dans le constructeur
 public class BookService {
 
     private final IBookRepository bookRepository;
-
-    public BookService(IBookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
 
 
     // méthode pour récupérer tous les livres depuis la bdd

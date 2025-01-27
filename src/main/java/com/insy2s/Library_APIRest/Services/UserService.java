@@ -7,8 +7,6 @@ import com.insy2s.Library_APIRest.Models.Entities.User;
 import com.insy2s.Library_APIRest.Models.Mapper.UserMapper;
 import com.insy2s.Library_APIRest.Models.Repositories.IUserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
