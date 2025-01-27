@@ -2,7 +2,7 @@ package com.insy2s.Library_APIRest.Controllers;
 
 import com.insy2s.Library_APIRest.Exceptions.UserAlreadyExistsException;
 import com.insy2s.Library_APIRest.Exceptions.UserNotFoundException;
-import com.insy2s.Library_APIRest.Models.Entities.User;
+import com.insy2s.Library_APIRest.Models.DTO.UserDTO;
 import com.insy2s.Library_APIRest.Services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,11 @@ public class UserController {
 
     // endpoint pour lister tous les utilisateurs
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+
+        List<UserDTO> usersDTO = userService.getAllUsers();
+
+        return ResponseEntity.ok(usersDTO);
     }
 
 
@@ -32,8 +34,8 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
-            User user = userService.getUserById(id);
-            return ResponseEntity.ok(user);
+            UserDTO userDTO = userService.getUserById(id);
+            return ResponseEntity.ok(userDTO);
 
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -43,9 +45,9 @@ public class UserController {
 
     // endpoint pour créer un nouvel utilisateur
     @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody User user) {
+    public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
         try {
-            userService.addUser(user);
+            userService.addUser(userDTO);
             return ResponseEntity.ok("Utilisateur créé !");
 
         } catch (UserAlreadyExistsException e) {
@@ -54,14 +56,15 @@ public class UserController {
     }
 
 
-    // endpoint pour modifier un utilisateur (possibilité de modifier un seul attribut en le passant seul dans le body)
+    // endpoint pour modifier un utilisateur
+    // (possibilité de modifier un seul attribut en le passant seul dans le body)
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
-            @RequestBody User userUpdated
+            @RequestBody UserDTO userDTO
     ) {
         try {
-            User updatedUser = userService.updateUser(id, userUpdated);
+            UserDTO updatedUser = userService.updateUser(id, userDTO);
             return ResponseEntity.ok(updatedUser);
 
         } catch (UserNotFoundException | UserAlreadyExistsException e) {

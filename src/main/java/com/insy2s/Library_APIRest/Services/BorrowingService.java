@@ -1,16 +1,21 @@
 package com.insy2s.Library_APIRest.Services;
 
-import com.insy2s.Library_APIRest.Exceptions.BookUnavailableException;
-import com.insy2s.Library_APIRest.Exceptions.BorrowingLimitExceededException;
-import com.insy2s.Library_APIRest.Exceptions.NoBorrowingsFoundException;
-import com.insy2s.Library_APIRest.Exceptions.UserNotFoundException;
+import com.insy2s.Library_APIRest.Exceptions.*;
+import com.insy2s.Library_APIRest.Models.DTO.BookDTO;
+import com.insy2s.Library_APIRest.Models.DTO.BorrowingDTO;
+import com.insy2s.Library_APIRest.Models.DTO.UserDTO;
 import com.insy2s.Library_APIRest.Models.Entities.Book;
 import com.insy2s.Library_APIRest.Models.Entities.Borrowing;
 import com.insy2s.Library_APIRest.Models.Entities.User;
+import com.insy2s.Library_APIRest.Models.Mapper.BookMapper;
+import com.insy2s.Library_APIRest.Models.Mapper.BorrowingMapper;
+import com.insy2s.Library_APIRest.Models.Mapper.UserMapper;
+import com.insy2s.Library_APIRest.Models.Repositories.IBookRepository;
 import com.insy2s.Library_APIRest.Models.Repositories.IBorrowingRepository;
 import com.insy2s.Library_APIRest.Models.Repositories.IUserRepository;
 import org.springframework.stereotype.Service;
 
+import java.lang.NullPointerException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,22 +27,29 @@ public class BorrowingService {
     private final UserService userService;
     private final IBorrowingRepository borrowingRepository;
     private final IUserRepository userRepository;
+    private final IBookRepository bookRepository;
 
     public BorrowingService(
             BookService bookService,
             UserService userService,
             IBorrowingRepository borrowingRepository,
-            IUserRepository userRepository) {
+            IUserRepository userRepository,
+            IBookRepository bookRepository) {
         this.bookService = bookService;
         this.userService = userService;
         this.borrowingRepository = borrowingRepository;
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
 
     // méthode pour récupérer tous les emprunts enregistrés en bdd
-    public List<Borrowing> getAllBorrowings() {
-        return borrowingRepository.findAll();
+    public List<BorrowingDTO> getAllBorrowings() {
+
+        return borrowingRepository.findAll()
+                .stream()
+                .map(BorrowingMapper::toBorrowingDTO)
+                .toList();
     }
 
 
@@ -48,12 +60,11 @@ public class BorrowingService {
         LocalDate borrowDate = LocalDate.now();
 
         // récupération du livre concerné à partir de son id passé en paramètre
-        Book book = bookService.getBookById(bookId);
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Le livre avec l'id " + bookId + " n'existe pas"));
 
-        // vérification de la disponibilité du livre
+        // vérification de la disposability du livre
         if (!book.getIsAvailable()) {
-
-            System.out.println("Le livre n'est pas disponible, exception");
 
             throw new BookUnavailableException
                     ("Le livre que vous souhaitez emprunter est déjà en cours d'emprunt");
@@ -70,7 +81,8 @@ public class BorrowingService {
             book.setIsAvailable(false);
 
             // récupération de l'utilisateur qui effectue l'emprunt a partir de son id
-            User user = userService.getUserById(userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + userId + " n'existe pas"));
 
             // création d'une nouvelle entrée d'emprunt reprenant la date d'emprunt, le livre emprunté, et l'utilisateur qui effectue l'emprunt
             Borrowing borrowing = new Borrowing();
@@ -94,7 +106,8 @@ public class BorrowingService {
         LocalDate returnDate = LocalDate.now();
 
         // récupération du livre concerné a partir de son id
-        Book book = bookService.getBookById(bookId);
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Le livre avec l'id " + bookId + " n'existe pas"));
 
         // récupération de la liste des emprunts enregistrés pour ce livre
         List<Borrowing> borrowings = borrowingRepository.findBorrowingByBookId(bookId);
@@ -111,14 +124,19 @@ public class BorrowingService {
 
 
     // méthode pour récupérer la liste des livres empruntés pour un utilisateur à partir de son id
-    public List<Borrowing> getBorrowingsByUserId(Long userId) {
+    public List<BorrowingDTO> getBorrowingsByUserId(Long userId) {
         // vérification de l'existence de l'utilisateur concerné
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("L'utilisateur avec l'ID " + userId + " n'existe pas");
         }
+
+        // retourne la liste des livres en cours d'emprunt et lève l'exception si la liste est vide
         return borrowingRepository.findBorrowingByUserId(userId)
                 .filter(list -> !list.isEmpty())
-                .orElseThrow(() -> new NoBorrowingsFoundException("L'utilisateur n'a pas d'emprunts en cours"));
+                .orElseThrow(() -> new NoBorrowingsFoundException("L'utilisateur n'a pas d'emprunts en cours"))
+                .stream()
+                .map(BorrowingMapper::toBorrowingDTO)
+                .toList();
     }
 
 

@@ -2,7 +2,7 @@ package com.insy2s.Library_APIRest.Controllers;
 
 import com.insy2s.Library_APIRest.Exceptions.BookAlreadyExistsException;
 import com.insy2s.Library_APIRest.Exceptions.BookNotFoundException;
-import com.insy2s.Library_APIRest.Models.Entities.Book;
+import com.insy2s.Library_APIRest.Models.DTO.BookDTO;
 import com.insy2s.Library_APIRest.Services.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,11 @@ public class BookController {
 
     // endpoint pour afficher tous les livres enregistrés
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        List<Book> books = bookService.getAllBooks();
-        return ResponseEntity.ok(books);
+    public ResponseEntity<List<BookDTO>> getAllBooks() {
+
+        List<BookDTO> booksDTO = bookService.getAllBooks();
+
+        return ResponseEntity.ok(booksDTO);
     }
 
 
@@ -32,8 +34,8 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookById(@PathVariable Long id) {
         try {
-            Book book = bookService.getBookById(id);
-            return ResponseEntity.ok(book);
+            BookDTO bookDTO = bookService.getBookById(id);
+            return ResponseEntity.ok(bookDTO);
 
         } catch (BookNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -45,18 +47,17 @@ public class BookController {
     // - http://localhost:8080/books/isAvailable?isAvailable=false : liste les livres non dispo
     // - http://localhost:8080/books/isAvailable?isAvailable=true : liste les livres dispo
     @GetMapping("/isAvailable")
-    public ResponseEntity<List<Book>> getBooksByAvailability
+    public ResponseEntity<List<BookDTO>> getBooksByAvailability
             (@RequestParam("isAvailable") boolean isAvailable) {
-        List<Book> books = bookService.getBooksAvailableOrNot(isAvailable);
-        return ResponseEntity.ok(books);
+        return ResponseEntity.ok(bookService.getBooksAvailableOrNot(isAvailable));
     }
 
 
     // endpoint pour enregistrer un livre (préciser seulement le titre et l'auteur dans le body)
     @PostMapping
-    public ResponseEntity<String> createBook(@RequestBody Book book) {
+    public ResponseEntity<String> createBook(@RequestBody BookDTO bookDTO) {
         try {
-            bookService.addBook(book);
+            bookService.addBook(bookDTO);
             return ResponseEntity.ok("Livre créé !");
 
         } catch (BookAlreadyExistsException e) {
@@ -69,11 +70,10 @@ public class BookController {
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateBook(
             @PathVariable Long id,
-            @RequestBody Book bookUpdated
+            @RequestBody BookDTO bookDTO
     ) {
         try {
-            Book updatedBook = bookService.updateBook(id, bookUpdated);
-            return ResponseEntity.ok(updatedBook);
+            return ResponseEntity.ok(bookService.updateBook(id, bookDTO));
 
         } catch (BookNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

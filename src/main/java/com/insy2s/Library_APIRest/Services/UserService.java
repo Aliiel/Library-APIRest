@@ -2,9 +2,13 @@ package com.insy2s.Library_APIRest.Services;
 
 import com.insy2s.Library_APIRest.Exceptions.UserAlreadyExistsException;
 import com.insy2s.Library_APIRest.Exceptions.UserNotFoundException;
+import com.insy2s.Library_APIRest.Models.DTO.UserDTO;
 import com.insy2s.Library_APIRest.Models.Entities.User;
+import com.insy2s.Library_APIRest.Models.Mapper.UserMapper;
 import com.insy2s.Library_APIRest.Models.Repositories.IUserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,21 +25,29 @@ public class UserService {
 
 
     // méthode pour récuperer tous les utilisateurs enregistrés en bdd
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toUserDTO)
+                .toList();
     }
 
 
     // méthode pour récupérer un utilisateur enregistré en bdd à partir de son id
-    public User getUserById(Long id) {
+    public UserDTO getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas"));
+        return user
+                .map(UserMapper::toUserDTO)
+                .orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas"));
     }
 
 
     // méthode pour créer un nouvel utilisateur
-    public void addUser(User user) {
+    public void addUser(UserDTO userDTO) {
         try {
+            User user = UserMapper.toUser(userDTO);
+
             // vérification de l'existence de l'utilisateur avec son nom et son email
             boolean userExists = userRepository.existsByNameAndEmail(user.getName(), user.getEmail());
             if (userExists) {
@@ -52,7 +64,9 @@ public class UserService {
 
 
     // méthode pour modifier un utilisateur
-    public User updateUser(Long id, User userUpdated) {
+    public UserDTO updateUser(Long id, UserDTO userDTO) {
+
+        User userUpdated = UserMapper.toUser(userDTO);
 
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas"));
@@ -67,7 +81,8 @@ public class UserService {
         }
 
         try {
-            return userRepository.save(existingUser);
+            userRepository.save(existingUser);
+            return UserMapper.toUserDTO(existingUser);
 
         } catch (DataIntegrityViolationException e) {
             throw new UserAlreadyExistsException("Un utilisateur avec cette adresse e-mail existe déjà.");

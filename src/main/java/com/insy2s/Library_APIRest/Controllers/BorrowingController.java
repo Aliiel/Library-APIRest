@@ -2,7 +2,7 @@ package com.insy2s.Library_APIRest.Controllers;
 
 import com.insy2s.Library_APIRest.Exceptions.*;
 import com.insy2s.Library_APIRest.Exceptions.NullPointerException;
-import com.insy2s.Library_APIRest.Models.Entities.Borrowing;
+import com.insy2s.Library_APIRest.Models.DTO.BorrowingDTO;
 import com.insy2s.Library_APIRest.Services.BorrowingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,9 @@ public class BorrowingController {
 
     // endpoint pour lister tous les emprunts enregistrés
     @GetMapping
-    public ResponseEntity<List<Borrowing>> getAllBorrowings() {
-        List<Borrowing> borrowings = borrowingService.getAllBorrowings();
-        return ResponseEntity.ok(borrowings);
+    public ResponseEntity<List<BorrowingDTO>> getAllBorrowings() {
+        List<BorrowingDTO> borrowingsDTO = borrowingService.getAllBorrowings();
+        return ResponseEntity.ok(borrowingsDTO);
     }
 
 
@@ -34,8 +34,8 @@ public class BorrowingController {
             (@PathVariable("userId") Long userId) {
 
         try {
-            List<Borrowing> borrowings = borrowingService.getBorrowingsByUserId(userId);
-            return ResponseEntity.ok(borrowings);
+            List<BorrowingDTO> borrowingsDTO = borrowingService.getBorrowingsByUserId(userId);
+            return ResponseEntity.ok(borrowingsDTO);
 
         } catch (NoBorrowingsFoundException | UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
