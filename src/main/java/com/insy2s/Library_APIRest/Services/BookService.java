@@ -23,10 +23,13 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    public List<Book> getBooksAvailableOrNot(boolean isAvailable) {
+        return bookRepository.findByIsAvailable(isAvailable);
+    }
 
     public Book getBookById(Long id) {
         Optional<Book> book = bookRepository.findById(id);
-        return book.orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+        return book.orElseThrow(() -> new BookNotFoundException("Le livre avec l'id " + id + " n'existe pas"));
     }
 
 
@@ -42,7 +45,7 @@ public class BookService {
     public Book updateBook(Long id, Book bookUpdated) {
 
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found"));
+                .orElseThrow(() -> new BookNotFoundException("Le livre avec l'id" + id + " n'existe pas"));
 
 
         if (bookUpdated.getTitle() != null) {
@@ -67,7 +70,7 @@ public class BookService {
         existingBook.ifPresentOrElse(
                 bookRepository::delete,
                 () -> {
-                    throw new BookNotFoundException("Book with ID " + id + " not found");
+                    throw new BookNotFoundException("Le livre avec l'id" + id + " n'existe pas");
                 }
         );
     }

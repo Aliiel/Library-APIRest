@@ -40,7 +40,7 @@ public class UserController {
     public ResponseEntity<String> createUser(@RequestBody User user) {
         try {
             userService.addUser(user);
-            return ResponseEntity.ok("User created !");
+            return ResponseEntity.ok("Utilisateur créé !");
 
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -65,7 +65,7 @@ public class UserController {
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            return ResponseEntity.ok("User deleted");
+            return ResponseEntity.ok("Utilisateur supprimé");
 
         } catch (UserNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

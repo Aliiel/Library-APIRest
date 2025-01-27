@@ -27,7 +27,7 @@ public class UserService {
 
     public User getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
+        return user.orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas"));
     }
 
 
@@ -49,7 +49,7 @@ public class UserService {
     public User updateUser(Long id, User userUpdated) {
 
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found"));
+                .orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas"));
 
 
         if (userUpdated.getName() != null) {
@@ -75,7 +75,7 @@ public class UserService {
         existingUser.ifPresentOrElse(
                 userRepository::delete,
                 () -> {
-                    throw new UserNotFoundException("User with ID " + id + " not found");
+                    throw new UserNotFoundException("L'utilisateur avec l'id " + id + " n'existe pas");
                 }
         );
     }

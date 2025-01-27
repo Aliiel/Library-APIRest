@@ -36,11 +36,18 @@ public class BookController {
         }
     }
 
+    @GetMapping("/isAvailable")
+    public ResponseEntity<List<Book>> getBooksByAvailability
+            (@RequestParam("isAvailable") boolean isAvailable) {
+        List<Book> books = bookService.getBooksAvailableOrNot(isAvailable);
+        return ResponseEntity.ok(books);
+    }
+
     @PostMapping
     public ResponseEntity<String> createBook(@RequestBody Book book) {
         try {
             bookService.addBook(book);
-            return ResponseEntity.ok("Book created");
+            return ResponseEntity.ok("Livre créé !");
 
         } catch (BookAlreadyExistsException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -65,7 +72,7 @@ public class BookController {
     public ResponseEntity<String> deleteBookById(@PathVariable Long id) {
         try {
             bookService.deleteBook(id);
-            return ResponseEntity.ok("Book deleted");
+            return ResponseEntity.ok("Livre supprimé");
 
         } catch (BookNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
